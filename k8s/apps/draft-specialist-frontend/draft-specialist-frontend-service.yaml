@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: draft-specialist-frontend
+  name: draft-specialist-frontend
+spec:
+  ports:
+  - name: "3165"
+    port: 3165
+    targetPort: 3165
+  selector:
+    service: draft-specialist-frontend
+status:
+  loadBalancer: {}

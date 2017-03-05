@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: router-api
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: router-api
+    spec:
+      containers:
+      - env:
+        - name: LOG_PATH
+          value: log/live.log
+        - name: VIRTUAL_HOST
+          value: router-api.dev.gov.uk
+        image: 192.168.99.1:5000/router-api
+        name: router-api
+        ports:
+        - containerPort: 3056
+        resources: {}
+        volumeMounts:
+        - mountPath: /app/log
+          name: router-api-claim0
+      restartPolicy: Always
+      volumes:
+      - name: router-api-claim0
+        persistentVolumeClaim:
+          claimName: router-api-claim0
+status: {}

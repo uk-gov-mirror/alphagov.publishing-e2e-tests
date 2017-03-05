@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: publishing-api
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: publishing-api
+    spec:
+      containers:
+      - env:
+        - name: VIRTUAL_HOST
+          value: publishing-api.dev.gov.uk
+        image: 192.168.99.1:5000/publishing-api
+        name: publishing-api
+        ports:
+        - containerPort: 3093
+        resources: {}
+        volumeMounts:
+        - mountPath: /govuk-content-schemas
+          name: publishing-api-claim0
+        - mountPath: /app/log
+          name: publishing-api-claim1
+      restartPolicy: Always
+      volumes:
+      - name: publishing-api-claim0
+        persistentVolumeClaim:
+          claimName: publishing-api-claim0
+      - name: publishing-api-claim1
+        persistentVolumeClaim:
+          claimName: publishing-api-claim1
+status: {}

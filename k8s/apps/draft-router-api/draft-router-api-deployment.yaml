@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: draft-router-api
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: draft-router-api
+    spec:
+      containers:
+      - env:
+        - name: VIRTUAL_HOST
+          value: draft-router-api.dev.gov.uk
+        - name: LOG_PATH
+          value: log/draft.log
+        - name: MONGODB_URI
+          value: mongodb://mongo/draft-router
+        - name: PLEK_HOSTNAME_PREFIX
+          value: draft-
+        - name: PORT
+          value: "3156"
+        - name: ROUTER_NODES
+          value: draft-router:3155
+        - name: TEST_MONGODB_URI
+          value: mongodb://mongo/draft-router-test
+        image: 192.168.99.1:5000/router-api
+        name: draft-router-api
+        ports:
+        - containerPort: 3156
+        resources: {}
+        volumeMounts:
+        - mountPath: /app/log
+          name: draft-router-api-claim0
+      restartPolicy: Always
+      volumes:
+      - name: draft-router-api-claim0
+        persistentVolumeClaim:
+          claimName: draft-router-api-claim0
+status: {}

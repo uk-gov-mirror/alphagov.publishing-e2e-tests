@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: router
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: router
+    spec:
+      containers:
+      - env:
+        - name: VIRTUAL_HOST
+          value: www.dev.gov.uk
+        - name: VIRTUAL_PORT
+          value: "3054"
+        image: 192.168.99.1:5000/router
+        name: router
+        ports:
+        - containerPort: 3054
+        - containerPort: 3055
+        resources: {}
+      restartPolicy: Always
+status: {}

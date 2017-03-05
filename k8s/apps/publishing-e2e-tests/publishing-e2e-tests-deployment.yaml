@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: publishing-e2e-tests
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: publishing-e2e-tests
+    spec:
+      containers:
+      - image: 192.168.99.1:5000/publishing-e2e-tests
+        name: publishing-e2e-tests
+        resources: {}
+        volumeMounts:
+        - mountPath: /app/tmp
+          name: publishing-e2e-tests-claim0
+      restartPolicy: Always
+      volumes:
+      - name: publishing-e2e-tests-claim0
+        persistentVolumeClaim:
+          claimName: publishing-e2e-tests-claim0
+status: {}

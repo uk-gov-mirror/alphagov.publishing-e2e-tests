@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: draft-content-store
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: draft-content-store
+    spec:
+      containers:
+      - env:
+        - name: PLEK_HOSTNAME_PREFIX
+          value: draft-
+        - name: PORT
+          value: "3100"
+        - name: VIRTUAL_HOST
+          value: draft-content-store.dev.gov.uk
+        - name: LOG_PATH
+          value: log/draft.log
+        - name: MONGODB_URI
+          value: mongodb://mongo/draft-content-store
+        image: 192.168.99.1:5000/content-store
+        name: draft-content-store
+        ports:
+        - containerPort: 3100
+        resources: {}
+        volumeMounts:
+        - mountPath: /app/log
+          name: draft-content-store-claim0
+        - mountPath: /govuk-content-schemas
+          name: draft-content-store-claim1
+      restartPolicy: Always
+      volumes:
+      - name: draft-content-store-claim0
+        persistentVolumeClaim:
+          claimName: draft-content-store-claim0
+      - name: draft-content-store-claim1
+        persistentVolumeClaim:
+          claimName: draft-content-store-claim1
+status: {}

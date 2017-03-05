@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: asset-manager
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: asset-manager
+    spec:
+      containers:
+      - env:
+        - name: VIRTUAL_HOST
+          value: asset-manager.dev.gov.uk
+        image: 192.168.99.1:5000/asset-manager
+        name: asset-manager
+        ports:
+        - containerPort: 3037
+        resources: {}
+        volumeMounts:
+        - mountPath: /app/log
+          name: asset-manager-claim0
+        - mountPath: /app/uploads
+          name: asset-manager-claim1
+      restartPolicy: Always
+      volumes:
+      - name: asset-manager-claim0
+        persistentVolumeClaim:
+          claimName: asset-manager-claim0
+      - name: asset-manager-claim1
+        persistentVolumeClaim:
+          claimName: asset-manager-claim1
+status: {}

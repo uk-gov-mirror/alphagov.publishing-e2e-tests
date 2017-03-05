@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: static
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: static
+    spec:
+      containers:
+      - env:
+        - name: LOG_PATH
+          value: log/live.log
+        - name: VIRTUAL_HOST
+          value: static.dev.gov.uk
+        image: 192.168.99.1:5000/static
+        name: static
+        ports:
+        - containerPort: 3013
+        resources: {}
+        volumeMounts:
+        - mountPath: /app/log
+          name: static-claim0
+      restartPolicy: Always
+      volumes:
+      - name: static-claim0
+        persistentVolumeClaim:
+          claimName: static-claim0
+status: {}

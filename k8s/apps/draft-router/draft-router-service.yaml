@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: draft-router
+  name: draft-router
+spec:
+  ports:
+  - name: "3154"
+    port: 3154
+    targetPort: 3154
+  - name: "3155"
+    port: 3155
+    targetPort: 3155
+  selector:
+    service: draft-router
+status:
+  loadBalancer: {}

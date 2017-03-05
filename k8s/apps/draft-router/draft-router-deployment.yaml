@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: draft-router
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: draft-router
+    spec:
+      containers:
+      - env:
+        - name: ROUTER_APIADDR
+          value: :3155
+        - name: ROUTER_MONGO_DB
+          value: draft-router
+        - name: ROUTER_PUBADDR
+          value: :3154
+        - name: VIRTUAL_HOST
+          value: draft-origin.dev.gov.uk
+        - name: VIRTUAL_PORT
+          value: "3154"
+        - name: PLEK_HOSTNAME_PREFIX
+          value: draft-
+        image: 192.168.99.1:5000/router
+        name: draft-router
+        ports:
+        - containerPort: 3154
+        - containerPort: 3155
+        resources: {}
+      restartPolicy: Always
+status: {}

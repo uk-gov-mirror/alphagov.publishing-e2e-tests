@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: specialist-frontend
+  name: specialist-frontend
+spec:
+  ports:
+  - name: "3065"
+    port: 3065
+    targetPort: 3065
+  selector:
+    service: specialist-frontend
+status:
+  loadBalancer: {}

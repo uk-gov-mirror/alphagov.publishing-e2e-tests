@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: router
+  name: router
+spec:
+  ports:
+  - name: "3054"
+    port: 3054
+    targetPort: 3054
+  - name: "3055"
+    port: 3055
+    targetPort: 3055
+  selector:
+    service: router
+status:
+  loadBalancer: {}

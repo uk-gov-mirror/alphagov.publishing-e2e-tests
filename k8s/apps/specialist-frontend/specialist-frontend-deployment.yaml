@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: specialist-frontend
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: specialist-frontend
+    spec:
+      containers:
+      - env:
+        - name: LOG_PATH
+          value: log/live.log
+        - name: VIRTUAL_HOST
+          value: specialist-frontend.dev.gov.uk
+        image: 192.168.99.1:5000/specialist-frontend
+        name: specialist-frontend
+        ports:
+        - containerPort: 3065
+        resources: {}
+        volumeMounts:
+        - mountPath: /app/log
+          name: specialist-frontend-claim0
+      restartPolicy: Always
+      volumes:
+      - name: specialist-frontend-claim0
+        persistentVolumeClaim:
+          claimName: specialist-frontend-claim0
+status: {}
