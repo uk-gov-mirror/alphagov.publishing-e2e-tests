@@ -23,6 +23,7 @@ services:
     image: rabbitmq
 
   router: &router
+    image: router
     build:
       context: ./apps/router
     environment:
@@ -36,6 +37,7 @@ services:
       - "3055:3055"
 
   draft-router:
+    image: draft-router
     << : *router
     environment:
       PLEK_HOSTNAME_PREFIX: draft-
@@ -52,6 +54,7 @@ services:
       - "3155:3155"
 
   router-api: &router-api
+    image: router-api
     build:
       context: ./apps/router-api
     environment:
@@ -66,6 +69,7 @@ services:
       - ./apps/router-api/log:/app/log
 
   draft-router-api:
+    image: draft-router-api
     << : *router-api
     environment:
       LOG_PATH: log/draft.log
@@ -82,6 +86,7 @@ services:
       - "3156:3156"
 
   content-store: &content-store
+    image: content-store
     build:
       context: ./apps/content-store
     depends_on:
@@ -99,6 +104,7 @@ services:
       - ./apps/govuk-content-schemas:/govuk-content-schemas
 
   draft-content-store:
+    image: draft-content-store
     << : *content-store
     depends_on:
       - draft-router-api
@@ -115,6 +121,7 @@ services:
       - "3100:3100"
 
   publishing-api:
+    image: publishing-api
     build:
       context: ./apps/publishing-api
     depends_on:
@@ -132,6 +139,7 @@ services:
       - ./apps/publishing-api/log:/app/log
 
   publishing-api-worker:
+    image: publishing-api-worker
     build:
       context: ./apps/publishing-api
     command: bundle exec sidekiq -C ./config/sidekiq.yml
@@ -149,6 +157,7 @@ services:
       - ./apps/publishing-api/log:/app/log
 
   specialist-publisher:
+    image: specialist-publisher
     build:
       context: ./apps/specialist-publisher
     depends_on:
@@ -167,6 +176,7 @@ services:
       - ./apps/specialist-publisher/log:/app/log
 
   asset-manager: &asset-manager
+    image: asset-manager
     build:
       context: ./apps/asset-manager
     depends_on:
@@ -182,12 +192,14 @@ services:
       - ./tmp/asset-manager/uploads:/app/uploads
 
   asset-manager-worker:
+    image: asset-manager-worker
     << : *asset-manager
     command: bundle exec rake jobs:work
     depends_on: []
     ports: []
 
   static: &static
+    image: static
     build:
       context: ./apps/static
     environment:
@@ -199,6 +211,7 @@ services:
       - ./apps/static/log:/app/log
 
   draft-static:
+    image: draft-static
     << : *static
     environment:
       LOG_PATH: log/draft.log
@@ -213,6 +226,7 @@ services:
   # draft-finder-frontend:
 
   specialist-frontend: &specialist-frontend
+    image: specialist-frontend
     build:
       context: ./apps/specialist-frontend
     depends_on:
@@ -230,6 +244,7 @@ services:
       - ./apps/specialist-frontend/log:/app/log
 
   draft-specialist-frontend:
+    image: draft-specialist-frontend
     << : *specialist-frontend
     depends_on:
       - draft-content-store
@@ -246,6 +261,7 @@ services:
       - "3165:3165"
 
   publishing-e2e-tests:
+    image: publishing-e2e-tests
     build:
       context: ./
     depends_on:
