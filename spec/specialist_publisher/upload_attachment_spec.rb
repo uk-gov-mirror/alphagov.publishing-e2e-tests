@@ -1,6 +1,5 @@
 require "spec_helper"
 require "httparty"
-require "byebug"
 
 feature "Uploading an attachment on Specialist Publisher", specialist_publisher: true do
   include SpecialistPublisherHelpers
