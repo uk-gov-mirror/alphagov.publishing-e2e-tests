@@ -1,8 +1,10 @@
 require "sinatra"
 require "sinatra/json"
-require "nokogiri"
 require "yaml"
+require_relative "lib/compressed_requests"
 require_relative "lib/event"
+
+use CompressedRequests
 
 ERROR_LOG = ENV.fetch("ERROR_LOG", "/app/tmp/errors.log")
 VERBOSE_ERROR_LOG = ENV.fetch("ERROR_LOG", "/app/tmp/errors-verbose.log")
@@ -12,7 +14,7 @@ get "/" do
 end
 
 post "/api/:project_id/store/" do
-  event = Event.new(request.body.read.to_s)
+  event = Event.new(request.env['rack.input'].read)
   handle_event(event)
 
   # Respond with what airbrake is expecting

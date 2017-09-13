@@ -36,16 +36,13 @@ services:
     depends_on:
       - diet-sentry
     environment:
-      ERRBIT_API_KEY: 1
-      ERRBIT_ENVIRONMENT_NAME: rummager
       GOVUK_APP_NAME: rummager
       LOG_PATH: log/live.log
-      SENTRY_DSN: http://user:password@sentry.dev.gov.uk:3130/123
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk/123
       VIRTUAL_HOST: rummager.dev.gov.uk
     links:
       - elasticsearch
       - redis
-      - nginx-proxy:errbit.dev.gov.uk
       - nginx-proxy:sentry.dev.gov.uk
     ports:
       - "3009:3009"
@@ -69,7 +66,6 @@ services:
       - "3130:3130"
     volumes:
       - ./tmp:/app/tmp
-
 
   router: &router
     build: apps/router
@@ -106,16 +102,15 @@ services:
   router-api: &router-api
     build: apps/router-api
     depends_on:
-      - diet-errbit
+      - diet-sentry
     environment:
-      ERRBIT_API_KEY: 1
-      ERRBIT_ENVIRONMENT_NAME: router-api
       LOG_PATH: log/live.log
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk/123
       VIRTUAL_HOST: router-api.dev.gov.uk
     links:
       - mongo
       - router
-      - nginx-proxy:errbit.dev.gov.uk
+      - nginx-proxy:sentry.dev.gov.uk
     ports:
       - "3056:3056"
     volumes:
@@ -125,20 +120,18 @@ services:
     << : *router-api
     environment:
       ERRBIT_API_KEY: 1
-      ERRBIT_ENVIRONMENT_NAME: draft-router-api
-      GOVUK_APP_NAME: draft-router-api
       LOG_PATH: log/draft.log
       MONGODB_URI: mongodb://mongo/draft-router
       PLEK_HOSTNAME_PREFIX: draft-
-      PLEK_SERVICE_ERRBIT_URI: http://errbit.dev.gov.uk
       PORT: 3156
       ROUTER_NODES: "draft-router:3155"
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk/123
       TEST_MONGODB_URI: mongodb://mongo/draft-router-test
       VIRTUAL_HOST: draft-router-api.dev.gov.uk
     links:
       - mongo
       - draft-router
-      - nginx-proxy:errbit.dev.gov.uk
+      - nginx-proxy:sentry.dev.gov.uk
     ports:
       - "3156:3156"
 
@@ -146,16 +139,15 @@ services:
     build: apps/content-store
     depends_on:
       - router-api
-      - diet-errbit
+      - diet-sentry
     environment:
-      ERRBIT_API_KEY: 1
-      ERRBIT_ENVIRONMENT_NAME: content-store
       LOG_PATH: log/live.log
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk/123
       VIRTUAL_HOST: content-store.dev.gov.uk
     links:
       - mongo
       - nginx-proxy:router-api.dev.gov.uk
-      - nginx-proxy:errbit.dev.gov.uk
+      - nginx-proxy:sentry.dev.gov.uk
     ports:
       - "3068:3068"
     volumes:
@@ -166,21 +158,20 @@ services:
     << : *content-store
     depends_on:
       - draft-router-api
-      - diet-errbit
+      - diet-sentry
     environment:
-      ERRBIT_API_KEY: 1
-      ERRBIT_ENVIRONMENT_NAME: draft-content-store
       GOVUK_APP_NAME: draft-content-store
       LOG_PATH: log/draft.log
       MONGODB_URI: mongodb://mongo/draft-content-store
       PLEK_HOSTNAME_PREFIX: draft-
       PLEK_SERVICE_ERRBIT_URI: http://errbit.dev.gov.uk
       PORT: 3100
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk/123
       VIRTUAL_HOST: draft-content-store.dev.gov.uk
     links:
       - mongo
       - nginx-proxy:draft-router-api.dev.gov.uk
-      - nginx-proxy:errbit.dev.gov.uk
+      - nginx-proxy:sentry.dev.gov.uk
     ports:
       - "3100:3100"
 
@@ -188,17 +179,16 @@ services:
     build: apps/publishing-api
     depends_on:
       - publishing-api-worker
-      - diet-errbit
+      - diet-sentry
     environment:
       DISABLE_QUEUE_PUBLISHER: 1
-      ERRBIT_API_KEY: 1
-      ERRBIT_ENVIRONMENT_NAME: publishing-api
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk/123
       VIRTUAL_HOST: publishing-api.dev.gov.uk
     links:
       - db
       - redis
       # - rabbitmq
-      - nginx-proxy:errbit.dev.gov.uk
+      - nginx-proxy:sentry.dev.gov.uk
     ports:
       - "3093:3093"
     volumes:
@@ -211,18 +201,17 @@ services:
     depends_on:
       - content-store
       - draft-content-store
-      - diet-errbit
+      - diet-sentry
     environment:
       DISABLE_QUEUE_PUBLISHER: 1
-      ERRBIT_API_KEY: 1
-      ERRBIT_ENVIRONMENT_NAME: publishing-api-worker
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk/123
     links:
       - db
       - redis
       # - rabbitmq
       - nginx-proxy:content-store.dev.gov.uk
       - nginx-proxy:draft-content-store.dev.gov.uk
-      - nginx-proxy:errbit.dev.gov.uk
+      - nginx-proxy:sentry.dev.gov.uk
     volumes:
       - ./apps/govuk-content-schemas:/govuk-content-schemas
       - ./apps/publishing-api/log:/app/log
@@ -234,16 +223,13 @@ services:
       - asset-manager
       - diet-sentry
     environment:
-      ERRBIT_API_KEY: 1
-      ERRBIT_ENVIRONMENT_NAME: specialist-publisher
-      SENTRY_DSN: http://user:password@sentry.dev.gov.uk:3130/127
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk/123
       VIRTUAL_HOST: specialist-publisher.dev.gov.uk
     links:
       - mongo
       - redis
       - nginx-proxy:publishing-api.dev.gov.uk
       - nginx-proxy:asset-manager.dev.gov.uk
-      - nginx-proxy:errbit.dev.gov.uk
       - nginx-proxy:sentry.dev.gov.uk
     ports:
       - "3064:3064"

@@ -1,3 +1,5 @@
+require "json"
+
 class Event
   attr_reader :json, :timestamp
 
