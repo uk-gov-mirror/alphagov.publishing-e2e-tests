@@ -34,17 +34,19 @@ services:
   rummager:
     build: apps/rummager
     depends_on:
-      - diet-errbit
+      - diet-sentry
     environment:
       ERRBIT_API_KEY: 1
       ERRBIT_ENVIRONMENT_NAME: rummager
       GOVUK_APP_NAME: rummager
       LOG_PATH: log/live.log
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk:3130/123
       VIRTUAL_HOST: rummager.dev.gov.uk
     links:
       - elasticsearch
       - redis
       - nginx-proxy:errbit.dev.gov.uk
+      - nginx-proxy:sentry.dev.gov.uk
     ports:
       - "3009:3009"
     volumes:
@@ -58,6 +60,16 @@ services:
       - "3129:3129"
     volumes:
       - ./tmp:/app/tmp
+
+  diet-sentry:
+    build: diet-sentry
+    environment:
+      VIRTUAL_HOST: sentry.dev.gov.uk
+    ports:
+      - "3130:3130"
+    volumes:
+      - ./tmp:/app/tmp
+
 
   router: &router
     build: apps/router
@@ -220,10 +232,11 @@ services:
     depends_on:
       - publishing-api
       - asset-manager
-      - diet-errbit
+      - diet-sentry
     environment:
       ERRBIT_API_KEY: 1
       ERRBIT_ENVIRONMENT_NAME: specialist-publisher
+      SENTRY_DSN: http://user:password@sentry.dev.gov.uk:3130/127
       VIRTUAL_HOST: specialist-publisher.dev.gov.uk
     links:
       - mongo
@@ -231,6 +244,7 @@ services:
       - nginx-proxy:publishing-api.dev.gov.uk
       - nginx-proxy:asset-manager.dev.gov.uk
       - nginx-proxy:errbit.dev.gov.uk
+      - nginx-proxy:sentry.dev.gov.uk
     ports:
       - "3064:3064"
     volumes:
