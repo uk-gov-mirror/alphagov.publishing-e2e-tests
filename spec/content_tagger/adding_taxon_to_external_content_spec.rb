@@ -1,6 +1,6 @@
 feature "Adding a taxon to external content", new: true, collections: true, content_tagger: true, publisher: true do
-  include ContentTaggerHelpers
   include PublisherHelpers
+  include ContentTaggerHelpers
 
   let(:taxon_title) { "Tagging external content taxon " + SecureRandom.uuid }
   let(:taxon_slug) { "tagging-taxon-" + SecureRandom.uuid }

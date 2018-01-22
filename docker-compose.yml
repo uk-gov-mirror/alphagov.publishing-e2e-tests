@@ -921,10 +921,12 @@ services:
       - nginx-proxy:content-tagger.dev.gov.uk
       - nginx-proxy:signon.dev.gov.uk
     environment:
-      SIGNON_USER_COUNT: 2
+      SIGNON_USER_COUNT: 3
       SIGNON_USER_0_EMAIL: test@example.com
       SIGNON_USER_0_PASSPHRASE: saveabonobo+20
       SIGNON_USER_1_EMAIL: test1@example.com
       SIGNON_USER_1_PASSPHRASE: saveabonobo+20
+      SIGNON_USER_2_EMAIL: test2@example.com
+      SIGNON_USER_2_PASSPHRASE: saveabonobo+20
     volumes:
       - ./tmp:/app/tmp

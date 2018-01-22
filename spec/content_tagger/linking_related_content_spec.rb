@@ -1,6 +1,6 @@
 feature "Adding related content to Publisher content", new: true, content_tagger: true, frontend: true, publisher: true do
-  include ContentTaggerHelpers
   include PublisherHelpers
+  include ContentTaggerHelpers
 
   let(:guide_title) { "Transaction with related content " + SecureRandom.uuid }
   let(:guide_slug) { "transaction-with-related-content-" + SecureRandom.uuid }

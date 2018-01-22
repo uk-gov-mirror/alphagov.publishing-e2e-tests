@@ -28,7 +28,8 @@ module ContentTaggerHelpers
       @user = get_next_user(
         "Content Tagger" =>
         example.metadata.fetch(:permissions, default_permissions),
-        "Content Preview" => %w[]
+        "Publisher" =>
+        example.metadata.fetch(:permissions, %w[skip_review])
       )
       signin_with_user(@user)
     end

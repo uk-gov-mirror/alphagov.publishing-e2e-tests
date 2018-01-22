@@ -78,6 +78,15 @@ User.create!(
   organisation: organisation
 )
 
+User.create!(
+  name: "Test 2",
+  email: "test2@example.com",
+  password: "saveabonobo+20",
+  password_confirmation: "saveabonobo+20",
+  confirmation_token: "cake",
+  confirmed_at: DateTime.now,
+  organisation: organisation
+)
 
 api_user = ApiUser.create!(
   name: "API User",
