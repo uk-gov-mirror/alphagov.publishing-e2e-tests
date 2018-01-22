@@ -2,7 +2,6 @@ version: '3.4'
 
 x-govuk-app-env: &govuk-app
   DISABLE_DATABASE_ENVIRONMENT_CHECK: 1
-  GDS_SSO_STRATEGY: mock
   GDS_API_DISABLE_CACHE: "true"
   GOVUK_APP_DOMAIN: dev.gov.uk
   GOVUK_ASSET_ROOT: http://assets-origin.dev.gov.uk
@@ -14,6 +13,8 @@ x-govuk-app-env: &govuk-app
   SECRET_KEY_BASE: 875c6bf4c48da9bb41f4cfd25d09bf5e2a62d88b39efc4bd9c498e6c8f61e4df740af87386f97269525e01b5f74402512eb6a4723882579f10aa95f6e2971fc2
   SECRET_TOKEN: 875c6bf4c48da9bb41f4cfd25d09bf5e2a62d88b39efc4bd9c498e6c8f61e4df740af87386f97269525e01b5f74402512eb6a4723882579f10aa95f6e2971fc2
   SENTRY_DSN: http://user:password@error-handler.dev.gov.uk/123
+  OAUTH_SECRET: secret
+  ASSET_MANAGER_BEARER_TOKEN: 180
 
 x-draft-govuk-app-env: &draft-govuk-app
   << : *govuk-app
@@ -332,12 +333,14 @@ services:
       MONGO_WRITE_CONCERN: 1
       SENTRY_CURRENT_ENV: specialist-publisher
       VIRTUAL_HOST: specialist-publisher.dev.gov.uk
+      OAUTH_ID: specialist-publisher
     links:
       - mongo
       - redis
       - nginx-proxy:publishing-api.dev.gov.uk
       - nginx-proxy:asset-manager.dev.gov.uk
       - nginx-proxy:error-handler.dev.gov.uk
+      - nginx-proxy:signon.dev.gov.uk
     ports:
       - "3064"
     volumes:
@@ -359,6 +362,7 @@ services:
       << : *govuk-app
       SENTRY_CURRENT_ENV: travel-advice-publisher
       VIRTUAL_HOST: travel-advice-publisher.dev.gov.uk
+      OAUTH_ID: travel-advice-publisher
     links:
       - mongo
       - redis
@@ -367,6 +371,7 @@ services:
       - nginx-proxy:asset-manager.dev.gov.uk
       - nginx-proxy:static.dev.gov.uk
       - nginx-proxy:error-handler.dev.gov.uk
+      - nginx-proxy:signon.dev.gov.uk
     ports:
       - "3035"
     volumes:
@@ -400,11 +405,13 @@ services:
       << : *govuk-app
       SENTRY_CURRENT_ENV: collections-publisher
       VIRTUAL_HOST: collections-publisher.dev.gov.uk
+      OAUTH_ID: collections-publisher
     links:
       - mysql
       - nginx-proxy:rummager.dev.gov.uk
       - nginx-proxy:publishing-api.dev.gov.uk
       - nginx-proxy:error-handler.dev.gov.uk
+      - nginx-proxy:signon.dev.gov.uk
     ports:
       - "3071"
     volumes:
@@ -485,6 +492,7 @@ services:
       JWT_AUTH_SECRET: fakejwtsecret
       SENTRY_CURRENT_ENV: publisher
       VIRTUAL_HOST: publisher.dev.gov.uk
+      OAUTH_ID: publisher
       GOVUK_CONTENT_SCHEMAS_PATH: /govuk-content-schemas/
     volumes:
       - apps/govuk-content-schemas/:/govuk-content-schemas/
@@ -494,6 +502,7 @@ services:
       - nginx-proxy:publishing-api.dev.gov.uk
       - nginx-proxy:error-handler.dev.gov.uk
       - nginx-proxy:calendars.dev.gov.uk
+      - nginx-proxy:signon.dev.gov.uk
     ports:
       - "3000"
     volumes:
@@ -576,6 +585,8 @@ services:
       << : *govuk-app
       SENTRY_CURRENT_ENV: manuals-publisher
       VIRTUAL_HOST: manuals-publisher.dev.gov.uk
+      OAUTH_ID: manuals-publisher
+      GDS_SSO_STRATEGY: mock # TODO: Fix manuals publisher specs to support signon
     links:
       - mongo
       - nginx-proxy:rummager.dev.gov.uk
@@ -583,6 +594,7 @@ services:
       - nginx-proxy:error-handler.dev.gov.uk
       - nginx-proxy:asset-manager.dev.gov.uk
       - nginx-proxy:whitehall-admin.dev.gov.uk
+      - nginx-proxy:signon.dev.gov.uk
     ports:
       - "3205"
     volumes:
@@ -683,6 +695,7 @@ services:
       << : *govuk-app
       SENTRY_CURRENT_ENV: whitehall
       VIRTUAL_HOST: whitehall-admin.dev.gov.uk
+      OAUTH_ID: whitehall
     links:
       - mysql
       - nginx-proxy:rummager.dev.gov.uk
@@ -708,9 +721,11 @@ services:
       << : *govuk-app
       SENTRY_CURRENT_ENV: content-tagger
       VIRTUAL_HOST: content-tagger.dev.gov.uk
+      OAUTH_ID: content-tagger
     links:
       - nginx-proxy:error-handler.dev.gov.uk
       - nginx-proxy:publishing-api.dev.gov.uk
+      - nginx-proxy:signon.dev.gov.uk
       - postgres
       - redis
     ports:
@@ -741,12 +756,14 @@ services:
       - mongo
       - redis
       - nginx-proxy:error-handler.dev.gov.uk
+      - nginx-proxy:signon.dev.gov.uk
     environment:
       << : *govuk-app
       REDIS_HOST: redis
       SENTRY_CURRENT_ENV: asset-manager
       VIRTUAL_HOST: asset-manager.dev.gov.uk
       FAKE_S3_HOST: http://127.0.0.1
+      OAUTH_ID: asset-manager
       ALLOW_FAKE_S3_IN_PRODUCTION_FOR_PUBLISHING_E2E_TESTS: "true"
     ports:
       - "3037"
@@ -769,6 +786,29 @@ services:
     healthcheck:
       disable: true
     ports: []
+
+  signon: &signon
+    image: govuk/signon:${SIGNON_COMMITISH:-master}
+    build: apps/signon
+    command: bundle exec unicorn -p 3016
+    depends_on:
+      - diet-error-handler
+      - mysql
+    environment:
+      << : *govuk-app
+      SENTRY_CURRENT_ENV: signon
+      VIRTUAL_HOST: signon.dev.gov.uk
+      DEVISE_PEPPER: cayenne
+      DEVISE_SECRET_KEY: secret-sauce
+      REDIS_URL: redis://redis/4
+      RAILS_ENV: development
+    links:
+      - nginx-proxy:error-handler.dev.gov.uk
+    ports:
+      - "3016"
+    volumes:
+      - ./apps/signon/log:/app/log
+      - ./signon/seeds.rb:/app/db/seeds.rb
 
   static: &static
     image: govuk/static:${STATIC_COMMITISH:-master}
@@ -879,5 +919,12 @@ services:
       - nginx-proxy:publisher.dev.gov.uk
       - nginx-proxy:manuals-publisher.dev.gov.uk
       - nginx-proxy:content-tagger.dev.gov.uk
+      - nginx-proxy:signon.dev.gov.uk
+    environment:
+      SIGNON_USER_COUNT: 2
+      SIGNON_USER_0_EMAIL: test@example.com
+      SIGNON_USER_0_PASSPHRASE: saveabonobo+20
+      SIGNON_USER_1_EMAIL: test1@example.com
+      SIGNON_USER_1_PASSPHRASE: saveabonobo+20
     volumes:
       - ./tmp:/app/tmp

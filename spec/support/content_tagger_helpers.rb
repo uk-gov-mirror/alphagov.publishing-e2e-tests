@@ -18,4 +18,19 @@ module ContentTaggerHelpers
     fill_in "content_lookup_form_base_path", with: "/" + slug
     click_button "Edit page"
   end
+
+  def self.included(base)
+    return unless SignonHelpers::use_signon?
+
+    default_permissions = ["GDS Editor"]
+
+    base.before(:each) do |example|
+      @user = get_next_user(
+        "Content Tagger" =>
+        example.metadata.fetch(:permissions, default_permissions),
+        "Content Preview" => %w[]
+      )
+      signin_with_user(@user)
+    end
+  end
 end

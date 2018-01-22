@@ -2,7 +2,7 @@ APPS = asset-manager content-store govuk-content-schemas government-frontend \
 	publishing-api router router-api rummager \
 	specialist-publisher static travel-advice-publisher collections-publisher \
 	collections frontend publisher calendars \
-	manuals-publisher manuals-frontend whitehall content-tagger
+	manuals-publisher manuals-frontend whitehall content-tagger signon
 
 DOCKER_COMPOSE_CMD = docker-compose -f docker-compose.yml
 TEST_PROCESSES := 1
@@ -38,6 +38,7 @@ setup:
 	$(DOCKER_COMPOSE_CMD) run content-store bundle exec rake db:purge
 	$(DOCKER_COMPOSE_CMD) run draft-content-store bundle exec rake db:purge
 	$(DOCKER_COMPOSE_CMD) run asset-manager bundle exec rake db:purge
+	$(DOCKER_COMPOSE_CMD) run signon bundle exec rake db:setup
 	$(DOCKER_COMPOSE_CMD) run publishing-api bundle exec rake db:setup
 	$(DOCKER_COMPOSE_CMD) run publishing-e2e-tests bundle exec rake setup_rabbitmq_rummager
 	$(DOCKER_COMPOSE_CMD) run -e RUMMAGER_INDEX=all rummager bundle exec rake rummager:create_all_indices
