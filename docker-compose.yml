@@ -794,14 +794,15 @@ services:
     depends_on:
       - diet-error-handler
       - mysql
+      - redis
     environment:
       << : *govuk-app
       SENTRY_CURRENT_ENV: signon
       VIRTUAL_HOST: signon.dev.gov.uk
       DEVISE_PEPPER: cayenne
       DEVISE_SECRET_KEY: secret-sauce
-      REDIS_URL: redis://redis/4
       RAILS_ENV: development
+      REDIS_URL: redis://redis/signon
     links:
       - nginx-proxy:error-handler.dev.gov.uk
     ports:
