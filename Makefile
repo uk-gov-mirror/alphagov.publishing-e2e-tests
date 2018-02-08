@@ -32,7 +32,7 @@ kill:
 build: kill
 	$(DOCKER_COMPOSE_CMD) build diet-error-handler publishing-e2e-tests $(APPS_TO_BUILD)
 
-	
+
 setup:
 	bundle exec rake docker:wait_for_dbs
 	$(MAKE) setup_dbs
@@ -45,15 +45,15 @@ setup:
 	bundle exec rake docker:wait_for_apps
 
 setup_specialist_publisher:
-	$(MAKE) up specialist-publisher
+	$(DOCKER_COMPOSE_CMD) up -d specialist-publisher
+	$(DOCKER_COMPOSE_CMD) up -d government-frontend draft-government-frontend
 	$(MAKE) router_setup content_store_setup asset_manager_setup publishing_api_setup \
 	  specialist_publisher_setup
+	$(DOCKER_COMPOSE_CMD) exec -T publishing-api bundle exec rake setup_exchange
+	$(DOCKER_COMPOSE_CMD) run --rm publishing-api rails runner 'Sidekiq::Queue.new.clear'
 	bundle exec rake docker:wait_for_publishing_api
 	$(MAKE) publish_specialist
-	$(DOCKER_COMPOSE_CMD) run --rm publishing-e2e-tests bundle exec rake wait_for_router
 	bundle exec rake docker:wait_for_apps
-
-
 
 setup_dbs: router_setup content_store_setup asset_manager_setup \
   publishing_api_setup travel_advice_setup whitehall_setup \
@@ -70,7 +70,7 @@ content_store_setup:
 
 asset_manager_setup:
 	$(DOCKER_COMPOSE_CMD) exec -T asset-manager bundle exec rake db:purge
-	
+
 publishing_api_setup:
 	$(DOCKER_COMPOSE_CMD) exec -T publishing-api bundle exec rake db:setup
 
