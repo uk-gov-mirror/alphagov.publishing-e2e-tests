@@ -937,6 +937,22 @@ services:
 
   publishing-e2e-tests:
     build: .
+    depends_on:
+      - specialist-publisher
+      - government-frontend
+      - draft-government-frontend
+      - travel-advice-publisher
+      - contacts-admin
+      - content-tagger
+      - collections-publisher
+      - collections
+      - publisher
+      - finder-frontend
+      - frontend
+      - draft-frontend
+      - manuals-publisher
+      - manuals-frontend
+      - draft-manuals-frontend
     links:
       - nginx-proxy:www.dev.gov.uk
       - nginx-proxy:assets-origin.dev.gov.uk

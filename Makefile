@@ -44,6 +44,17 @@ setup:
 	$(DOCKER_COMPOSE_CMD) run --rm publishing-e2e-tests bundle exec rake wait_for_router
 	bundle exec rake docker:wait_for_apps
 
+setup_specialist_publisher:
+	$(MAKE) up specialist-publisher
+	$(MAKE) router_setup content_store_setup asset_manager_setup publishing_api_setup \
+	  specialist_publisher_setup
+	bundle exec rake docker:wait_for_publishing_api
+	$(MAKE) publish_specialist
+	$(DOCKER_COMPOSE_CMD) run --rm publishing-e2e-tests bundle exec rake wait_for_router
+	bundle exec rake docker:wait_for_apps
+
+
+
 setup_dbs: router_setup content_store_setup asset_manager_setup \
   publishing_api_setup travel_advice_setup whitehall_setup \
   content_tagger_setup manuals_publisher_setup specialist_publisher_setup \
