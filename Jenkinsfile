@@ -172,8 +172,7 @@ timestamps {
       try {
         stage("Start docker apps") {
           try {
-            sh("make up")
-            sh("make setup -j12")
+            sh("make setup_specialist_publisher")
           } catch(e) {
             echo("We weren't able to setup for tests, this probably means there is a bigger problem. Test aborting")
             throw e
@@ -194,7 +193,7 @@ timestamps {
 
         stage("Run tests") {
           echo "Running tests with `make ${params.TEST_COMMAND}`"
-          sh("make ${params.TEST_COMMAND} TEST_PROCESSES=${params.TEST_PROCESSES}")
+          sh("make test-specialist-publisher TEST_PROCESSES=${params.TEST_PROCESSES}")
         }
 
         if (env.BRANCH_NAME == "master") {
