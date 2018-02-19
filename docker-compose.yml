@@ -83,7 +83,6 @@ services:
       - rummager-listener-insert-data
       - rummager-listener-bulk-insert-data
       - diet-error-handler
-    command: bundle exec unicorn -p 3009
     environment:
       << : *govuk-app
       GOVUK_APP_NAME: rummager
@@ -104,7 +103,7 @@ services:
       - rabbitmq
       - publishing-api
       - diet-error-handler
-    command: bundle exec foreman run worker
+    command: foreman run worker
     environment:
       << : *govuk-app
       GOVUK_APP_NAME: rummager-worker
@@ -116,7 +115,7 @@ services:
 
   rummager-listener-publishing-queue:
     << : *rummager
-    command: bundle exec foreman run publishing-queue-listener
+    command: foreman run publishing-queue-listener
     depends_on:
       - diet-error-handler
       - rabbitmq
@@ -128,7 +127,7 @@ services:
 
   rummager-listener-insert-data:
     << : *rummager
-    command: bundle exec foreman run govuk-index-queue-listener
+    command: foreman run govuk-index-queue-listener
     depends_on:
       - diet-error-handler
       - rabbitmq
@@ -140,7 +139,7 @@ services:
 
   rummager-listener-bulk-insert-data:
     << : *rummager
-    command: bundle exec foreman run bulk-reindex-queue-listener
+    command: foreman run bulk-reindex-queue-listener
     depends_on:
       - diet-error-handler
       - rabbitmq
@@ -204,7 +203,6 @@ services:
   router-api: &router-api
     image: govuk/router-api:${ROUTER_API_COMMITISH:-master}
     build: apps/router-api
-    command: bundle exec unicorn -p 3056
     depends_on:
       - mongo
       - router
@@ -222,7 +220,6 @@ services:
 
   draft-router-api:
     << : *router-api
-    command: bundle exec unicorn -p 3156
     depends_on:
       - mongo
       - draft-router
@@ -244,7 +241,6 @@ services:
   content-store: &content-store
     image: govuk/content-store:${CONTENT_STORE_COMMITISH:-master}
     build: apps/content-store
-    command: bundle exec unicorn -p 3068
     depends_on:
       - mongo
       - router-api
@@ -265,7 +261,6 @@ services:
 
   draft-content-store:
     << : *content-store
-    command: bundle exec unicorn -p 3100
     depends_on:
       - mongo
       - draft-router-api
@@ -287,7 +282,6 @@ services:
   publishing-api: &publishing-api
     image: govuk/publishing-api:${PUBLISHING_API_COMMITISH:-master}
     build: apps/publishing-api
-    command: bundle exec unicorn -p 3093
     depends_on:
       - postgres
       - redis
@@ -310,7 +304,7 @@ services:
 
   publishing-api-worker:
     << : *publishing-api
-    command: bundle exec sidekiq -C ./config/sidekiq.yml
+    command: foreman run worker
     depends_on:
       - postgres
       - redis
@@ -335,7 +329,6 @@ services:
     image: govuk/specialist-publisher:${SPECIALIST_PUBLISHER_COMMITISH:-master}
     build:
       context: apps/specialist-publisher
-    command: bundle exec unicorn -p 3064
     depends_on:
       - mongo
       - redis
@@ -360,7 +353,6 @@ services:
     image: govuk/travel-advice-publisher:${TRAVEL_ADVICE_PUBLISHER_COMMITISH:-master}
     build:
       context: apps/travel-advice-publisher
-    command: bundle exec unicorn -p 3035
     depends_on:
       - mongo
       - redis
@@ -387,7 +379,7 @@ services:
 
   travel-advice-publisher-worker:
     << : *travel-advice-publisher
-    command: bundle exec sidekiq -C ./config/sidekiq.yml
+    command: foreman run worker
     depends_on:
       - publishing-api
       - diet-error-handler
@@ -402,7 +394,6 @@ services:
     image: govuk/collections-publisher:${COLLECTIONS_PUBLISHER_COMMITISH:-master}
     build:
       context: apps/collections-publisher
-    command: bundle exec unicorn -p 3071
     depends_on:
       - publishing-api
       - mysql
@@ -424,7 +415,7 @@ services:
 
   collections-publisher-worker:
     << : *collections-publisher
-    command: bundle exec sidekiq -C ./config/sidekiq.yml
+    command: foreman run worker
     depends_on:
       - publishing-api
       - diet-error-handler
@@ -439,7 +430,6 @@ services:
     image: govuk/collections:${COLLECTIONS_COMMITISH:-master}
     build:
       context: apps/collections
-    command: bundle exec unicorn -p 3070
     depends_on:
       - content-store
       - static
@@ -461,7 +451,6 @@ services:
 
   draft-collections:
     << : *collections
-    command: bundle exec unicorn -p 3170
     depends_on:
       - draft-content-store
       - draft-static
@@ -531,7 +520,6 @@ services:
     image: govuk/publisher:${PUBLISHER_COMMITISH:-master}
     build:
       context: apps/publisher
-    command: bundle exec unicorn -p 3000
     depends_on:
       - publishing-api
       - publisher-worker
@@ -560,7 +548,7 @@ services:
 
   publisher-worker:
     << : *publisher
-    command: bundle exec sidekiq -C ./config/sidekiq.yml
+    command: foreman run worker
     depends_on:
       - publishing-api
       - diet-error-handler
@@ -575,7 +563,6 @@ services:
     image: govuk/frontend:${FRONTEND_COMMITISH:-master}
     build:
       context: apps/frontend
-    command: bundle exec unicorn -p 3005
     depends_on:
       - content-store
       - static
@@ -599,7 +586,6 @@ services:
 
   draft-frontend:
     << : *frontend
-    command: bundle exec unicorn -p 3105
     depends_on:
       - draft-content-store
       - draft-static
@@ -622,7 +608,6 @@ services:
     image: govuk/manuals-publisher:${MANUALS_PUBLISHER_COMMITISH:-master}
     build:
       context: apps/manuals-publisher
-    command: bundle exec unicorn -p 3205
     depends_on:
       - publishing-api
       - mongo
@@ -648,7 +633,7 @@ services:
 
   manuals-publisher-worker:
     << : *manuals-publisher
-    command: bundle exec sidekiq -C ./config/sidekiq.yml
+    command: foreman run worker
     depends_on:
       - publishing-api
       - diet-error-handler
@@ -663,7 +648,6 @@ services:
     image: govuk/manuals-frontend:${MANUALS_FRONTEND_COMMITISH:-master}
     build:
       context: apps/manuals-frontend
-    command: bundle exec unicorn -p 3072
     depends_on:
       - content-store
       - static
@@ -683,7 +667,6 @@ services:
 
   draft-manuals-frontend: &draft-manuals-frontend
     << : *manuals-frontend
-    command: bundle exec unicorn -p 3172
     depends_on:
       - draft-content-store
       - draft-static
@@ -704,7 +687,6 @@ services:
     image: govuk/calendars:${CALENDARS_COMMITISH:-master}
     build:
       context: apps/calendars
-    command: bundle exec unicorn -p 3011
     depends_on:
       - rummager
       - content-store
@@ -730,7 +712,6 @@ services:
     image: govuk/whitehall:${WHITEHALL_COMMITISH:-master}
     build:
       context: apps/whitehall
-    command: bundle exec unicorn -p 3020
     depends_on:
       - asset-manager
       - content-store
@@ -778,7 +759,7 @@ services:
 
   whitehall-worker:
     << : *whitehall
-    command: bundle exec sidekiq -C ./config/sidekiq.yml
+    command: foreman run worker
     depends_on:
       - diet-error-handler
     environment:
@@ -824,7 +805,6 @@ services:
   asset-manager: &asset-manager
     image: govuk/asset-manager:${ASSET_MANAGER_COMMITISH:-master}
     build: apps/asset-manager
-    command: bundle exec unicorn -p 3037
     depends_on:
       - asset-manager-worker
       - diet-error-handler
@@ -849,7 +829,7 @@ services:
 
   asset-manager-worker:
     << : *asset-manager
-    command: bundle exec sidekiq -C ./config/sidekiq.yml
+    command: foreman run worker
     depends_on:
       - diet-error-handler
     environment:
@@ -866,7 +846,6 @@ services:
   static: &static
     image: govuk/static:${STATIC_COMMITISH:-master}
     build: apps/static
-    command: bundle exec unicorn -p 3013
     depends_on:
       - diet-error-handler
     environment:
@@ -882,7 +861,6 @@ services:
 
   draft-static:
     << : *static
-    command: bundle exec unicorn -p 3113
     environment:
       << : *draft-govuk-app
       GOVUK_APP_NAME: draft-static
@@ -896,7 +874,6 @@ services:
   government-frontend: &government-frontend
     image: govuk/government-frontend:${GOVERNMENT_FRONTEND_COMMITISH:-master}
     build: apps/government-frontend
-    command: bundle exec unicorn -p 3090
     depends_on:
       - content-store
       - static
@@ -919,7 +896,6 @@ services:
 
   draft-government-frontend:
     << : *government-frontend
-    command: bundle exec unicorn -p 3190
     depends_on:
       - draft-content-store
       - draft-static
