@@ -21,9 +21,14 @@ feature "Adding related content to Publisher content", content_tagger: true, fro
     @related_content_url = create_and_publish_guide(slug: related_content_slug, title: related_content_title)
     visit_tag_external_content_page(slug: guide_slug)
 
-    find("input.new-base-path").set("/" + related_content_slug)
-    click_button "Add related item"
-    expect(page).to have_text(related_content_slug)
+    find("input.js-path-field").set("/" + related_content_slug)
+    click_button "Add path"
+    expect(page).to_not have_content "Not a known URL on GOV.UK"
+    related_content_fields = all(
+      :xpath,
+      "//input[@name='tagging_tagging_update_form[ordered_related_items][]']"
+    )
+    expect(related_content_fields[0].value).to eq related_content_slug
     click_button "Update tagging"
     expect(page).to have_text("Tags have been updated!")
   end
