@@ -19,8 +19,6 @@
 
 require "capybara/rspec"
 require "capybara-screenshot/rspec"
-# require "capybara/webkit"
-require "capybara/poltergeist"
 require "capybara-select2"
 require "faker"
 require "plek"
@@ -114,16 +112,28 @@ RSpec.configure do |config|
 
   config.add_setting :reload_page_wait_time, default: 60
 
-  config.before(:each) do
-    page.driver.clear_memory_cache
-  end
+  # config.before(:each) do
+  #   page.driver.close
+  # end
 end
 
 Capybara.configure do |config|
   config.run_server = false
-  config.default_driver = :poltergeist
+  config.default_driver = :chrome
   config.save_path = ENV["CAPYBARA_SAVE_PATH"] || (__dir__ + "/../tmp")
   config.default_max_wait_time = 4
+end
+
+Capybara.register_driver :chrome do |app|
+  args = %w(
+    --window-size=1280,1696
+    --disable-infobars
+    --disable-notifications
+    --no-sandbox
+    --headless
+    --disable-gpu
+  )
+  Capybara::Selenium::Driver.new(app, browser: :chrome, args: args)
 end
 
 Capybara::Screenshot.register_filename_prefix_formatter(:rspec) do |example|
