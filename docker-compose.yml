@@ -773,8 +773,11 @@ services:
 
   whitehall-frontend:
     << : *whitehall
+    depends_on:
+      - redis
     environment:
       << : *govuk-app
+      REDIS_URL: redis://redis/1
       MEMCACHE_SERVERS: memcached
       VIRTUAL_HOST: whitehall-frontend.dev.gov.uk
       SENTRY_CURRENT_ENV: whitehall-frontend
