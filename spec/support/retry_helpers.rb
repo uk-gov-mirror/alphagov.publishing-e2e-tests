@@ -5,6 +5,7 @@ module RetryHelpers
   class TimeoutError < RuntimeError; end
 
   def reload_url_until_match(url, capybara_method, value, options = {})
+    puts "reload_url_until_match: #{url}"
     reload_options = {
       fail_reason: "#{url} didn't match #{value} for #{capybara_method}",
       reload_seconds: options[:reload_seconds] || nil,
@@ -47,6 +48,8 @@ module RetryHelpers
     reload_seconds: nil,
     interval_seconds: nil
   )
+    puts "reload_url_until_status_code: #{url}"
+
     status_codes = Array(status_code)
     keep_retrying_while = Array(keep_retrying_while)
     reload_options = {
