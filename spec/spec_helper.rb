@@ -138,6 +138,7 @@ Capybara.register_driver :headless_chrome do |app|
         --headless
         --no-sandbox
         --window-size=1366,768
+        --disable-dev-shm-usage
       )
     }
   )
