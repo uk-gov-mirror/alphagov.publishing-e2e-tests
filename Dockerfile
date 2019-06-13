@@ -11,8 +11,13 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 RUN apt-get update && apt-get install -y google-chrome-stable
 
-RUN export DISPLAY=:20
-RUN Xvfb :99 -screen 0 1366x768x16 &
+ENV DISPLAY=:20
+ADD runxvfb.sh /runxvfb.sh
+RUN chmod a+x /runxvfb.sh
+
+CMD /runxvfb.sh
+#RUN Xvfb :99 -screen 0 1366x768x16 &
+
 RUN echo "75.0.3770.8" > /root/.chromedriver-version
 
 ENV APP_HOME /app
