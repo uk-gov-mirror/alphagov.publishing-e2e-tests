@@ -16,7 +16,6 @@ ADD runxvfb.sh /runxvfb.sh
 RUN chmod a+x /runxvfb.sh
 
 CMD /runxvfb.sh
-#RUN Xvfb :99 -screen 0 1366x768x16 &
 
 RUN echo "75.0.3770.8" > /root/.chromedriver-version
 
