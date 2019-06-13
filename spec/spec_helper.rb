@@ -126,6 +126,8 @@ end
 #end
 require "webdrivers"
 
+Webdrivers::Chromedriver.update
+
 Capybara.register_driver :headless_chrome do |app|
   capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
     acceptInsecureCerts: true,
