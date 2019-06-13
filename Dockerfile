@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y google-chrome-stable
 
 RUN export DISPLAY=:20
 RUN Xvfb :99 -screen 0 1366x768x16 &
-# RUN echo "75.0.3770.8" > /root/.chromedriver-version
+RUN echo "75.0.3770.8" > /root/.chromedriver-version
 
 ENV APP_HOME /app
 RUN mkdir $APP_HOME
