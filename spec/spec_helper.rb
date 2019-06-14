@@ -25,6 +25,7 @@ require "faker"
 require "plek"
 require "ptools"
 require "selenium-webdriver"
+require "webdrivers"
 
 Dir["./spec/support/*.rb"].each { |f| require f }
 
@@ -116,17 +117,17 @@ RSpec.configure do |config|
   config.add_setting :reload_page_wait_time, default: 60
 end
 
-chromedriver_from_path = File.which("chromedriver")
+#chromedriver_from_path = File.which("chromedriver")
 
-if chromedriver_from_path
-  # Use the installed chromedriver, rather than chromedriver-helper
-  Selenium::WebDriver::Chrome.driver_path = chromedriver_from_path
-  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  puts "using chromedriver from path"
-else
-  require "webdrivers"
-  #require "chromedriver-helper"
-end
+#if chromedriver_from_path
+#  # Use the installed chromedriver, rather than chromedriver-helper
+#  Selenium::WebDriver::Chrome.driver_path = chromedriver_from_path
+#  puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+#  puts "using chromedriver from path"
+#else
+#  require "webdrivers"
+#  #require "chromedriver-helper"
+#end
 
 Capybara.register_driver :headless_chrome do |app|
   capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
@@ -142,6 +143,7 @@ Capybara.register_driver :headless_chrome do |app|
         --window-size=1366,768
         --disable-dev-shm-usage
         --disable-features=NetworkService
+        --w3c=false
       )
     }
   )
@@ -171,6 +173,8 @@ Capybara.configure do |config|
   config.default_max_wait_time = 4
 end
 
+port = 9887 + ENV["TEST_ENV_NUMBER"].to_i
+Capybara.server_port = port
 # Capybara::Webkit.configure do |config|
 #   config.allow_url("*.dev.gov.uk")
 #   config.block_unknown_urls
