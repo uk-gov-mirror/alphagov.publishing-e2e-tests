@@ -12,25 +12,25 @@ RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable 
 RUN apt-get update && apt-get install -y google-chrome-stable
 
 ARG CHROME_DRIVER_VERSION
-RUN if [ -z "$CHROME_DRIVER_VERSION" ]; \
-  then CHROME_MAJOR_VERSION=$(google-chrome --version | sed -E "s/.* ([0-9]+)(\.[0-9]+){3}.*/\1/") \
-    && CHROME_DRIVER_VERSION=$(wget --no-verbose -O - "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION}"); \
-  fi \
-  && echo "Using chromedriver version: "$CHROME_DRIVER_VERSION \
-  && wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
+RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/75.0.3770.8/chromedriver_linux64.zip \
   && rm -rf /opt/selenium/chromedriver \
   && unzip /tmp/chromedriver_linux64.zip -d /opt/selenium \
   && rm /tmp/chromedriver_linux64.zip \
-  && mv /opt/selenium/chromedriver /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION \
-  && chmod 755 /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION \
-  && ln -fs /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver \
-  && echo $CHROME_MAJOR_VERSION > /root/.chromedriver-version
+  && chmod 755 /opt/selenium/chromedriver \
+  && ln -fs /opt/selenium/chromedriver /usr/bin/chromedriver \
+  && echo "75.0.3770.8" > /root/.chromedriver-version
 #RUN echo "75.0.3770.8" > /root/.chromedriver-version
 
+
+RUN bash -c 'google-chrome --version'
+
+RUN bash -c 'chromedriver --version'
 
 ENV DISPLAY=:20
 ADD runxvfb.sh /runxvfb.sh
 RUN chmod a+x /runxvfb.sh
+
+RUN bash -c 'ls /'
 
 CMD /runxvfb.sh
 
