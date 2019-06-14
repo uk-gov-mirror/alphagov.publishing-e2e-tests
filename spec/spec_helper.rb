@@ -129,36 +129,56 @@ end
 #  #require "chromedriver-helper"
 #end
 
-Capybara.register_driver :headless_chrome do |app|
-  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+Capybara.register_driver :firefox_headless do |app|
+  capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(
     acceptInsecureCerts: true,
-    chromeOptions: {
+    firefoxOptions: {
       args: %w(
-        --disable-gpu
-        --disable-web-security
-        --disable-infobars
-        --disable-notifications
         --headless
-        --no-sandbox
-        --window-size=1366,768
-        --disable-dev-shm-usage
-        --disable-features=NetworkService
-        --w3c=false
       )
     }
   )
-
   Capybara::Selenium::Driver.new(
     app,
-    browser: :chrome,
+    browser: :firefox,
     desired_capabilities: capabilities
   )
 end
 
-Capybara.javascript_driver = :headless_chrome
+
+
+
+#Capybara.register_driver :headless_chrome do |app|
+#  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+#    acceptInsecureCerts: true,
+#    chromeOptions: {
+#      args: %w(
+#        --disable-gpu
+#        --disable-web-security
+#        --disable-infobars
+#        --disable-notifications
+#        --headless
+#        --no-sandbox
+#        --window-size=1366,768
+#        --disable-dev-shm-usage
+#        --disable-features=NetworkService
+#        --w3c=false
+#      )
+#    }
+#  )
+
+#  Capybara::Selenium::Driver.new(
+#    app,
+#    browser: :chrome,
+#    desired_capabilities: capabilities
+#  )
+#end
+
+Capybara.javascript_driver = :firefox_headless
+#Capybara.javascript_driver = :headless_chrome
 
 # Add support for Headless Chrome screenshots.
-Capybara::Screenshot.register_driver(:headless_chrome) do |driver, path|
+Capybara::Screenshot.register_driver(:firefox_headless) do |driver, path|
   driver.browser.save_screenshot(path)
 end
 
@@ -168,13 +188,13 @@ end
 
 Capybara.configure do |config|
   config.run_server = false
-  config.default_driver = :headless_chrome
+  config.default_driver = :firefox_headless
   config.save_path = ENV["CAPYBARA_SAVE_PATH"] || (__dir__ + "/../tmp")
   config.default_max_wait_time = 4
 end
 
-port = 9887 + ENV["TEST_ENV_NUMBER"].to_i
-Capybara.server_port = port
+#port = 9887 + ENV["TEST_ENV_NUMBER"].to_i
+#Capybara.server_port = port
 # Capybara::Webkit.configure do |config|
 #   config.allow_url("*.dev.gov.uk")
 #   config.block_unknown_urls

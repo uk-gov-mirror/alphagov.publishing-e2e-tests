@@ -3,28 +3,22 @@ RUN apt-get update -qq && apt-get upgrade -y
 
 RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -
 RUN apt-get install -y build-essential libpq-dev libxml2-dev libxslt1-dev \
-    libfontconfig1 libfontconfig1-dev nodejs unzip xvfb && \
+    libfontconfig1 libfontconfig1-dev nodejs unzip xvfb firefox-esr && \
   apt-get clean
 
-# Install Google Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-RUN apt-get update && apt-get install -y google-chrome-stable
+RUN GK_VERSION="0.24.0" \
+  && echo "Using GeckoDriver version: "$GK_VERSION \
+  && wget --no-verbose -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v$GK_VERSION/geckodriver-v$GK_VERSION-linux64.tar.gz \
+  && rm -rf /opt/geckodriver \
+  && tar -C /opt -zxf /tmp/geckodriver.tar.gz \
+  && rm /tmp/geckodriver.tar.gz \
+  && mv /opt/geckodriver /opt/geckodriver-$GK_VERSION \
+  && chmod 755 /opt/geckodriver-$GK_VERSION \
+  && ln -fs /opt/geckodriver-$GK_VERSION /usr/bin/geckodriver
 
-ARG CHROME_DRIVER_VERSION
-RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/75.0.3770.8/chromedriver_linux64.zip \
-  && rm -rf /opt/selenium/chromedriver \
-  && unzip /tmp/chromedriver_linux64.zip -d /opt/selenium \
-  && rm /tmp/chromedriver_linux64.zip \
-  && chmod 755 /opt/selenium/chromedriver \
-  && ln -fs /opt/selenium/chromedriver /usr/bin/chromedriver \
-  && echo "75.0.3770.8" > /root/.chromedriver-version
-#RUN echo "75.0.3770.8" > /root/.chromedriver-version
+RUN bash -c 'geckodriver --version'
+RUN bash -c 'firefox --version'
 
-
-RUN bash -c 'google-chrome --version'
-
-RUN bash -c 'chromedriver --version'
 
 ENV DISPLAY=:20
 ADD runxvfb.sh /runxvfb.sh
