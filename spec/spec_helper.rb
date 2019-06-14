@@ -129,6 +129,7 @@ end
 #  #require "chromedriver-helper"
 #end
 
+Webdrivers::Geckodriver.update
 Capybara.register_driver :firefox_headless do |app|
   capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(
     acceptInsecureCerts: true,
