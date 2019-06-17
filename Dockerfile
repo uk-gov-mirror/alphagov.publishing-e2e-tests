@@ -3,8 +3,10 @@ RUN apt-get update -qq && apt-get upgrade -y
 
 RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -
 RUN apt-get install -y build-essential libpq-dev libxml2-dev libxslt1-dev \
-    libfontconfig1 libfontconfig1-dev nodejs unzip xvfb && \
-  apt-get clean
+    libfontconfig1 libfontconfig1-dev nodejs unzip xvfb libpulse0 && \
+    apt-get clean
+
+    #fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst ttf-freefont && \
 
 # Install Google Chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
