@@ -15,6 +15,10 @@ RUN apt-get clean
 ENV APP_HOME /app
 RUN mkdir $APP_HOME
 
+RUN useradd -m build
+RUN chown build $APP_HOME
+USER build
+
 WORKDIR $APP_HOME
 ADD Gemfile* $APP_HOME/
 RUN bundle install

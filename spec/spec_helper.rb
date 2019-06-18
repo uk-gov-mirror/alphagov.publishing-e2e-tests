@@ -120,7 +120,6 @@ Capybara.register_driver :headless_chrome do |app|
   chrome_options = Selenium::WebDriver::Chrome::Options.new
   chrome_options.headless!
   chrome_options.add_argument("--disable-web-security")
-  chrome_options.add_argument("--no-sandbox")
   chrome_options.add_argument("--window-size=1400,1400")
 
   Capybara::Selenium::Driver.new(
