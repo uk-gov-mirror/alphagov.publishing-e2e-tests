@@ -116,33 +116,22 @@ RSpec.configure do |config|
   config.add_setting :reload_page_wait_time, default: 60
 end
 
-Capybara.register_driver :headless_chrome do |app|
-  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
-    acceptInsecureCerts: true,
-    chromeOptions: {
-      args: %w(
-        --disable-gpu
-        --disable-web-security
-        --disable-infobars
-        --disable-notifications
-        --headless
-        --no-sandbox
-        --window-size=1400,1400
-      )
-    }
-  )
+Capybara.register_driver :headless_firefox do |app|
+  firefox_options = Selenium::WebDriver::Firefox::Options.new
+  firefox_options.headless!
+  firefox_options.add_argument("-width=1400")
+  firefox_options.add_argument("-height=1400")
 
   Capybara::Selenium::Driver.new(
     app,
-    browser: :chrome,
-    desired_capabilities: capabilities
+    browser: :firefox,
+    desired_capabilities: { acceptInsecureCerts: true },
+    options: firefox_options
   )
 end
 
-Capybara.javascript_driver = :headless_chrome
-
-# Add support for Headless Chrome screenshots.
-Capybara::Screenshot.register_driver(:headless_chrome) do |driver, path|
+# Add support for Headless Firefox screenshots.
+Capybara::Screenshot.register_driver(:headless_firefox) do |driver, path|
   driver.browser.save_screenshot(path)
 end
 
@@ -152,7 +141,7 @@ end
 
 Capybara.configure do |config|
   config.run_server = false
-  config.default_driver = :headless_chrome
+  config.default_driver = :headless_firefox
   config.save_path = ENV["CAPYBARA_SAVE_PATH"] || (__dir__ + "/../tmp")
   config.default_max_wait_time = 4
 end
