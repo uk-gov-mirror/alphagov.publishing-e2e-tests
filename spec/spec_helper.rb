@@ -144,4 +144,5 @@ Capybara.configure do |config|
   config.default_driver = :headless_firefox
   config.save_path = ENV["CAPYBARA_SAVE_PATH"] || (__dir__ + "/../tmp")
   config.default_max_wait_time = 4
+  config.server_port = 9887 + ENV['TEST_ENV_NUMBER'].to_i
 end
