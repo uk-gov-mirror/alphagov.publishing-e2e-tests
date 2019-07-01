@@ -12,8 +12,13 @@ RUN apt-get update && apt-get install -y google-chrome-stable
 
 RUN apt-get clean
 
+RUN useradd -m build
+
 ENV APP_HOME /app
 RUN mkdir $APP_HOME
+RUN chown build $APP_HOME
+
+USER build
 
 WORKDIR $APP_HOME
 ADD Gemfile* $APP_HOME/
