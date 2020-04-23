@@ -461,6 +461,7 @@ services:
       - diet-error-handler
     environment:
       << : *govuk-app
+      ASSET_ORIGIN_ASSET_PATH: /collections/
       SENTRY_CURRENT_ENV: collections
       VIRTUAL_HOST: collections.dev.gov.uk
     links:
@@ -535,6 +536,7 @@ services:
       - router
     environment:
       << : *govuk-app
+      ASSET_ORIGIN_ASSET_PATH: /finder-frontend/
       SENTRY_CURRENT_ENV: finder-frontend
       VIRTUAL_HOST: finder-frontend.dev.gov.uk
     healthcheck:
@@ -608,6 +610,7 @@ services:
       - publishing-api
     environment:
       << : *govuk-app
+      ASSET_ORIGIN_ASSET_PATH: /frontend/
       SENTRY_CURRENT_ENV: frontend
       VIRTUAL_HOST: frontend.dev.gov.uk
     healthcheck:
@@ -693,6 +696,7 @@ services:
       - diet-error-handler
     environment:
       << : *govuk-app
+      ASSET_ORIGIN_ASSET_PATH: /manuals-frontend/
       SENTRY_CURRENT_ENV: manuals-frontend
       VIRTUAL_HOST: manuals-frontend.dev.gov.uk
     links:
@@ -733,6 +737,7 @@ services:
       - diet-error-handler
     environment:
       << : *govuk-app
+      ASSET_ORIGIN_ASSET_PATH: /calendars/
       SENTRY_CURRENT_ENV: calendars
       VIRTUAL_HOST: calendars.dev.gov.uk
     links:
@@ -787,6 +792,7 @@ services:
     << : *whitehall
     environment:
       << : *govuk-app
+      ASSET_ORIGIN_ASSET_PATH: /government/assets/
       MEMCACHE_SERVERS: memcached
       VIRTUAL_HOST: whitehall-frontend.dev.gov.uk
       SENTRY_CURRENT_ENV: whitehall-frontend
@@ -967,6 +973,7 @@ services:
       - diet-error-handler
     environment:
       << : *govuk-app
+      ASSET_ORIGIN_ASSET_PATH: /
       SENTRY_CURRENT_ENV: static
       VIRTUAL_HOST: static.dev.gov.uk
     links:
@@ -998,6 +1005,7 @@ services:
       - memcached
     environment:
       << : *govuk-app
+      ASSET_ORIGIN_ASSET_PATH: /government-frontend/
       MEMCACHE_SERVERS: memcached
       SENTRY_CURRENT_ENV: government-frontend
       VIRTUAL_HOST: government-frontend.dev.gov.uk
