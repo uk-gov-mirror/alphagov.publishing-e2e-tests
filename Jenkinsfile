@@ -88,9 +88,9 @@ timestamps {
 
         // Docker leaves these owned by root which makes it difficult for
         // Jenkins to clean them up
-        stage("Clean temporary files") {
-          sh("make -j clean_tmp clean_apps")
-        }
+        // stage("Clean temporary files") {
+        //   sh("make -j clean_tmp clean_apps")
+        // }
       }
     }
   }
@@ -303,9 +303,9 @@ def makeLogsAvailable() {
 }
 
 def stopDocker() {
-  stage("Stop Docker") {
-    sh("make stop")
-  }
+  // stage("Stop Docker") {
+  //   sh("make stop")
+  // }
 }
 
 def alertTestOutcome(params, testStatus) {
