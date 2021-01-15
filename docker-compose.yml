@@ -476,11 +476,13 @@ services:
       context: apps/collections
     depends_on:
       - content-store
+      - memcached
       - static
       - rummager
       - diet-error-handler
     environment:
       << : *govuk-app
+      MEMCACHE_SERVERS: memcached
       SENTRY_CURRENT_ENV: collections
       VIRTUAL_HOST: collections.dev.gov.uk
     links:
@@ -497,11 +499,13 @@ services:
     << : *collections
     depends_on:
       - draft-content-store
+      - memcached
       - draft-static
       - rummager
       - diet-error-handler
     environment:
       << : *draft-govuk-app
+      MEMCACHE_SERVERS: memcached
       SENTRY_CURRENT_ENV: draft-collections
       VIRTUAL_HOST: draft-collections.dev.gov.uk
       PORT: 3170
